@@ -1,0 +1,55 @@
+# Maven
+/target/
+
+# Compiled class files
+*.class
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Maven wrapper
+.mvn/
+/.mvn/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ output
+out/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build directories
+bin/
+
+# Temporary files
+*.tmp
+*.bak
+
+# Test output
+test-classes/
+
+# Local Maven repository (if accidentally checked in)
+.m2/
+
+# Others
+logs/
+
+# Keep the pom.xml tracked
+!pom.xml
