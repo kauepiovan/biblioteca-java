@@ -11,9 +11,12 @@ import br.com.kauepiovan.biblioteca.domain.model.Livro;
 import br.com.kauepiovan.biblioteca.repository.EmprestimoRepository;
 import br.com.kauepiovan.biblioteca.repository.LivroRepository;
 import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
+import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
 import br.com.kauepiovan.biblioteca.services.EmprestimoService;
 import br.com.kauepiovan.biblioteca.services.LivroService;
 import br.com.kauepiovan.biblioteca.services.UsuarioService;
+import br.com.kauepiovan.biblioteca.services.BibliotecarioService;
+import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
 
 public class App {
     public static void main(String[] args) {
@@ -23,6 +26,12 @@ public class App {
 
         var livroRepository = new LivroRepository();
         var livroService = new LivroService(livroRepository);
+        
+        var bibliotecarioRepository = new BibliotecarioRepository();
+        var bibliotecarioService = new BibliotecarioService(bibliotecarioRepository);
+        
+        var emprestimoRepository = new EmprestimoRepository();
+        var emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository, bibliotecarioRepository);
 
         // --- Dados mockados iniciais ---
         usuarioRepository.addOne(new Usuario("Alice Silva", "alice@example.com", TipoUsuario.COMUM));
@@ -32,10 +41,10 @@ public class App {
         livroRepository.addOne(new Livro("A Jornada do Heroi", "Mariana Souza", GeneroLiterario.ACAO_E_AVENTURA));
         livroRepository.addOne(new Livro("Reinos Fantasticos", "Carlos Lima", GeneroLiterario.FANTASIA));
         livroRepository.addOne(new Livro("Futuro Imaginado", "Ana Martins", GeneroLiterario.FICCAO_CIENTIFICA));
-        // -------------------------------
 
-        var emprestimoRepository = new EmprestimoRepository();
-        var emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository);
+        bibliotecarioRepository.addOne(new Bibliotecario("Maria Admin", "maria@biblioteca.com"));
+        bibliotecarioRepository.addOne(new Bibliotecario("Joao Admin", "joao@biblioteca.com"));
+        // -------------------------------
 
         var menu = new Menu();
         var input = new Scanner(System.in);
@@ -68,6 +77,20 @@ public class App {
                     }
                     break;
                 case 2:
+                    // Cadastrar bibliotecario
+                    try {
+                        input.nextLine();
+                        System.out.println("Digite o nome do bibliotecario: ");
+                        var nomeBiblio = input.nextLine();
+                        System.out.println("Digite o email do bibliotecario: ");
+                        var emailBiblio = input.nextLine();
+                        bibliotecarioService.cadastrarBibliotecario(nomeBiblio, emailBiblio);
+                        System.out.println("Bibliotecario: | " + nomeBiblio + " | " + emailBiblio + " | Criado com sucesso!");
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    break;
+                case 3:
                     // Cadastrar livros
                     try {
                         input.nextLine();
@@ -92,22 +115,39 @@ public class App {
                         System.out.println("Error: " + e.getMessage());
                     }
                     break;
-                case 3:
-                    // listar usuarios
+                case 4:
+                    // Listar usuarios
                     try {
                         usuarioService.listarUsuarios();
                     } catch (Exception e) {
                         System.out.println("Error: " + e.getMessage());
                     }
                     break;
-                case 4:
+                case 5:
+                    // Listar bibliotecarios
+                    try {
+                        bibliotecarioService.listarBibliotecarios();
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    break;
+                case 6:
+                    // Listar livros
                     try {
                         livroService.listarLivros();
                     } catch (Exception e) {
                         System.out.println("Error: " + e.getMessage());
                     }
                     break;
-                case 5:
+                case 7:
+                    // Listar emprestimos
+                    try {
+                        emprestimoService.listarEmprestimos();    
+                    } catch (Exception e) {
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                    break;
+                case 8:
                     // Emprestar livros
                     try {
                         input.nextLine();
@@ -118,25 +158,21 @@ public class App {
                         System.out.println("Digite o titulo do livro: ");
                         var tituloLivroEmprestimo = input.nextLine();
 
-                        emprestimoService.realizarEmprestimo(emailUsuarioEmprestimo, tituloLivroEmprestimo);
+                        System.out.println("Digite o email do bibliotecario responsavel: ");
+                        var emailBibliotecario = input.nextLine();
+
+                        emprestimoService.realizarEmprestimo(emailUsuarioEmprestimo, tituloLivroEmprestimo, emailBibliotecario);
                     } catch (Exception e) {
                         System.out.println("Erro: " + e.getMessage());
                     }
                     break;
-                case 6:
+                case 9:
                     // Devolver livros
                     try {
                         input.nextLine();
                         System.out.println("Digite o id do emprestimo: ");
                         var id = input.nextLine();
                         emprestimoService.finalizarEmprestimo(UUID.fromString(id));
-                    } catch (Exception e) {
-                        System.out.println("Erro: " + e.getMessage());
-                    }
-                    break;
-                case 7:
-                    try {
-                        emprestimoService.listarEmprestimos();    
                     } catch (Exception e) {
                         System.out.println("Erro: " + e.getMessage());
                     }

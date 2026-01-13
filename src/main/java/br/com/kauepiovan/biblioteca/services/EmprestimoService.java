@@ -3,11 +3,13 @@ package br.com.kauepiovan.biblioteca.services;
 import br.com.kauepiovan.biblioteca.repository.EmprestimoRepository;
 import br.com.kauepiovan.biblioteca.repository.LivroRepository;
 import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
+import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 
 import java.util.UUID;
 
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
+import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
 import br.com.kauepiovan.biblioteca.domain.model.Emprestimo;
 import br.com.kauepiovan.biblioteca.domain.model.Livro;
 
@@ -16,14 +18,17 @@ public class EmprestimoService {
     private final UsuarioRepository usuarioRepository;
     private final LivroRepository livroRepository;
     private final EmprestimoRepository emprestimoRepository;
+    private final BibliotecarioRepository bibliotecarioRepository;
 
     public EmprestimoService(
             UsuarioRepository usuarioRepository,
             LivroRepository livroRepository,
-            EmprestimoRepository emprestimoRepository) {
+            EmprestimoRepository emprestimoRepository,
+            BibliotecarioRepository bibliotecarioRepository) {
         this.usuarioRepository = usuarioRepository;
         this.livroRepository = livroRepository;
         this.emprestimoRepository = emprestimoRepository;
+        this.bibliotecarioRepository = bibliotecarioRepository;
     }
 
     private Usuario findUsuario(String email) {
@@ -41,9 +46,15 @@ public class EmprestimoService {
                 .orElseThrow(() -> new IllegalArgumentException("Id fornecido não encontrado: " + id));
     }
 
-    public void realizarEmprestimo(String email, String titulo) {
+    private Bibliotecario findBibliotecario(String email) {
+        return bibliotecarioRepository.getOne(email)
+                .orElseThrow(() -> new IllegalArgumentException("Bibliotecario não encontrado: " + email));
+    }
+
+    public void realizarEmprestimo(String email, String titulo, String emailBibliotecario) {
         Usuario usuario = findUsuario(email);
         Livro livro = findLivro(titulo);
+        var bibliotecario = findBibliotecario(emailBibliotecario);
 
         if (usuario.getLivrosEmprestados().size() + 1 > usuario.getLimiteLivros()) {
             throw new IllegalStateException(
@@ -60,7 +71,7 @@ public class EmprestimoService {
         usuarioRepository.update(usuario);
         livroRepository.update(livro);
 
-        var emprestimo = new Emprestimo(usuario, livro);
+        var emprestimo = new Emprestimo(usuario, livro, bibliotecario);
         emprestimoRepository.addOne(emprestimo);
     }
 
@@ -76,7 +87,7 @@ public class EmprestimoService {
         var copyLivrosEmprestados = usuario.getLivrosEmprestados();
         copyLivrosEmprestados.remove(livro);
         usuario.setLivrosEmprestados(copyLivrosEmprestados);
-        
+
         livro.setStatus(StatusLivro.DISPONIVEL);
 
         emprestimo.setFinalizado(true);
@@ -98,8 +109,12 @@ public class EmprestimoService {
             var usuario = emprestimo.getUsuario();
             System.out.println("  Usuário: " + usuario.getNome() + " | Email: " + usuario.getEmail());
             var livro = emprestimo.getLivro();
-            System.out.println("  Livro: " + livro.getTitulo() + " | Autor: " + livro.getAutor() + " | Status: " + livro.getStatus());
-            System.out.println("  Data criação: " + emprestimo.getDataCriacao() + " | Vencimento: " + emprestimo.getDataVencimento() + " | Finalizado: " + emprestimo.getFinalizado());
+            System.out.println("  Livro: " + livro.getTitulo() + " | Autor: " + livro.getAutor() + " | Status: "
+                + livro.getStatus());
+            var bibliotecario = emprestimo.getBibliotecario();
+            System.out.println("  Bibliotecario: " + bibliotecario.getNome() + " | Email: " + bibliotecario.getEmail());
+            System.out.println("  Data criação: " + emprestimo.getDataCriacao() + " | Vencimento: "
+                    + emprestimo.getDataVencimento() + " | Finalizado: " + emprestimo.getFinalizado());
         }
     }
 

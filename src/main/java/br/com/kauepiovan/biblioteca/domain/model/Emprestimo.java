@@ -7,14 +7,16 @@ public class Emprestimo {
     private UUID id;
     private Usuario usuario;
     private Livro livro;
+    private Bibliotecario bibliotecario;
     private LocalDate dataCriacao;
     private LocalDate dataVencimento;
     private boolean finalizado;
 
-    public Emprestimo(Usuario usuario, Livro livro) {
+    public Emprestimo(Usuario usuario, Livro livro, Bibliotecario bibliotecario) {
         this.id = UUID.randomUUID();
         this.usuario = usuario;
         this.livro = livro;
+        this.bibliotecario = bibliotecario;
         this.dataCriacao = LocalDate.now();
         this.dataVencimento = dataCriacao.plusDays(7);
         this.finalizado = false;
@@ -28,6 +30,9 @@ public class Emprestimo {
     }
     public Livro getLivro() {
         return livro;
+    }
+    public Bibliotecario getBibliotecario() {
+        return bibliotecario;
     }
     public LocalDate getDataCriacao() {
         return dataCriacao;
@@ -47,6 +52,7 @@ public class Emprestimo {
         return "{\nid=" + getId() + ",\n" + 
                "usuario=" + getUsuario() + ",\n" + 
                "livro=" + getLivro() + ",\n" + 
+               "bibliotecario=" + getBibliotecario() + ",\n" + 
                "data_criacao=" + getDataCriacao() + ",\n" + 
                "data_vencimento=" + getDataVencimento() + ",\n" + 
                "finalizado=" + getFinalizado() + ",\n}";
