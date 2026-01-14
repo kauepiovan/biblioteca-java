@@ -14,12 +14,12 @@ public class LivroService {
 
     public void cadastrarLivro(String titulo, String autor, GeneroLiterario categoria) {
         var livro = new Livro(titulo, autor, categoria);
-        repository.addOne(livro);
+        repository.save(livro);
         System.out.println("Livro: " + livro + " Cadastrado com sucesso!");
     }
 
     public void listarLivros() {
-        var livros = repository.getAll();
+        var livros = repository.findAll();
         System.out.println("\n=== Lista de Livros ===");
         if (livros.isEmpty()) {
             System.out.println("Nenhum livro cadastrado.");
