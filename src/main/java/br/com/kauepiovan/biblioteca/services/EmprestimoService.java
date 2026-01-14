@@ -3,6 +3,10 @@ package br.com.kauepiovan.biblioteca.services;
 import br.com.kauepiovan.biblioteca.repository.EmprestimoRepository;
 import br.com.kauepiovan.biblioteca.repository.LivroRepository;
 import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
+import br.com.kauepiovan.biblioteca.repository.Impl.BibliotecarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.EmprestimoRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.LivroRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.UsuarioRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 
@@ -21,10 +25,10 @@ public class EmprestimoService {
     private final BibliotecarioRepository bibliotecarioRepository;
 
     public EmprestimoService(
-            UsuarioRepository usuarioRepository,
-            LivroRepository livroRepository,
-            EmprestimoRepository emprestimoRepository,
-            BibliotecarioRepository bibliotecarioRepository) {
+            UsuarioRepositoryImpl usuarioRepository,
+            LivroRepositoryImpl livroRepository,
+            EmprestimoRepositoryImpl emprestimoRepository,
+            BibliotecarioRepositoryImpl bibliotecarioRepository) {
         this.usuarioRepository = usuarioRepository;
         this.livroRepository = livroRepository;
         this.emprestimoRepository = emprestimoRepository;
@@ -32,22 +36,22 @@ public class EmprestimoService {
     }
 
     private Usuario findUsuario(String email) {
-        return usuarioRepository.getOne(email)
+        return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado: " + email));
     }
 
     private Livro findLivro(String titulo) {
-        return livroRepository.getOne(titulo)
+        return livroRepository.findByTitulo(titulo)
                 .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado: " + titulo));
     }
 
     private Emprestimo findEmprestimo(UUID id) {
-        return emprestimoRepository.getOne(id)
+        return emprestimoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Id fornecido não encontrado: " + id));
     }
 
     private Bibliotecario findBibliotecario(String email) {
-        return bibliotecarioRepository.getOne(email)
+        return bibliotecarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Bibliotecario não encontrado: " + email));
     }
 
@@ -68,11 +72,11 @@ public class EmprestimoService {
         usuario.criarEmprestimo(livro);
         livro.setStatus(StatusLivro.EMPRESTADO);
 
-        usuarioRepository.update(usuario);
-        livroRepository.update(livro);
+        usuarioRepository.save(usuario);
+        livroRepository.save(livro);
 
         var emprestimo = new Emprestimo(usuario, livro, bibliotecario);
-        emprestimoRepository.addOne(emprestimo);
+        emprestimoRepository.save(emprestimo);
     }
 
     public void finalizarEmprestimo(UUID id) {
@@ -92,13 +96,13 @@ public class EmprestimoService {
 
         emprestimo.setFinalizado(true);
 
-        usuarioRepository.update(usuario);
-        livroRepository.update(livro);
-        emprestimoRepository.update(emprestimo);
+        usuarioRepository.save(usuario);
+        livroRepository.save(livro);
+        emprestimoRepository.save(emprestimo);
     }
 
     public void listarEmprestimos() {
-        var emprestimos = emprestimoRepository.getAll();
+        var emprestimos = emprestimoRepository.findAll();
         System.out.println("\n=== Lista de Empréstimos ===");
         if (emprestimos.isEmpty()) {
             System.out.println("Nenhum empréstimo registrado.");
