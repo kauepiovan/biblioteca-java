@@ -2,30 +2,30 @@ package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
-import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
+import br.com.kauepiovan.biblioteca.repository.Impl.UsuarioRepositoryImpl;
 
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepositoryImpl repository;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepositoryImpl repository) {
         this.repository = repository;
     }
 
     private boolean emailExists(String email) {
-        return !repository.getOne(email).isEmpty();
+        return repository.findByEmail(email).isPresent() ? true : false;
     }
 
     public void cadastrarUsuario(String nome, String email, TipoUsuario tipo) {
         if (emailExists(email)) {
-            throw new IllegalStateException("Email informa ja existe cadastro: " + email);
+            throw new IllegalStateException("Email informado ja existe cadastro: " + email);
         }
         var usuario = new Usuario(nome, email, tipo);
-        repository.addOne(usuario);
+        repository.save(usuario);
     }
 
     public void listarUsuarios() {
-        var usuarios = repository.getAll();
+        var usuarios = repository.findAll();
         System.out.println("\n=== Lista de Usuários ===");
         if (usuarios.isEmpty()) {
             System.out.println("Nenhum usuário cadastrado.");
