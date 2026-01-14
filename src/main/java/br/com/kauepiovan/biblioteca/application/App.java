@@ -8,10 +8,10 @@ import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 import br.com.kauepiovan.biblioteca.domain.model.Menu;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 import br.com.kauepiovan.biblioteca.domain.model.Livro;
-import br.com.kauepiovan.biblioteca.repository.EmprestimoRepository;
-import br.com.kauepiovan.biblioteca.repository.LivroRepository;
-import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
-import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
+import br.com.kauepiovan.biblioteca.repository.Impl.BibliotecarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.EmprestimoRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.LivroRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.Impl.UsuarioRepositoryImpl;
 import br.com.kauepiovan.biblioteca.services.EmprestimoService;
 import br.com.kauepiovan.biblioteca.services.LivroService;
 import br.com.kauepiovan.biblioteca.services.UsuarioService;
@@ -21,29 +21,29 @@ import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
 public class App {
     public static void main(String[] args) {
 
-        var usuarioRepository = new UsuarioRepository();
+        var usuarioRepository = new UsuarioRepositoryImpl();
         var usuarioService = new UsuarioService(usuarioRepository);
 
-        var livroRepository = new LivroRepository();
+        var livroRepository = new LivroRepositoryImpl();
         var livroService = new LivroService(livroRepository);
         
-        var bibliotecarioRepository = new BibliotecarioRepository();
+        var bibliotecarioRepository = new BibliotecarioRepositoryImpl();
         var bibliotecarioService = new BibliotecarioService(bibliotecarioRepository);
         
-        var emprestimoRepository = new EmprestimoRepository();
+        var emprestimoRepository = new EmprestimoRepositoryImpl();
         var emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository, bibliotecarioRepository);
 
         // --- Dados mockados iniciais ---
-        usuarioRepository.addOne(new Usuario("Alice Silva", "alice@example.com", TipoUsuario.COMUM));
-        usuarioRepository.addOne(new Usuario("Bruno Costa", "bruno@example.com", TipoUsuario.PREMIUM));
+        usuarioRepository.save(new Usuario("Alice Silva", "alice@example.com", TipoUsuario.COMUM));
+        usuarioRepository.save(new Usuario("Bruno Costa", "bruno@example.com", TipoUsuario.PREMIUM));
 
-        livroRepository.addOne(new Livro("O Misterio do Lago", "João Pereira", GeneroLiterario.SUSPENSE));
-        livroRepository.addOne(new Livro("A Jornada do Heroi", "Mariana Souza", GeneroLiterario.ACAO_E_AVENTURA));
-        livroRepository.addOne(new Livro("Reinos Fantasticos", "Carlos Lima", GeneroLiterario.FANTASIA));
-        livroRepository.addOne(new Livro("Futuro Imaginado", "Ana Martins", GeneroLiterario.FICCAO_CIENTIFICA));
+        livroRepository.save(new Livro("O Misterio do Lago", "João Pereira", GeneroLiterario.SUSPENSE));
+        livroRepository.save(new Livro("A Jornada do Heroi", "Mariana Souza", GeneroLiterario.ACAO_E_AVENTURA));
+        livroRepository.save(new Livro("Reinos Fantasticos", "Carlos Lima", GeneroLiterario.FANTASIA));
+        livroRepository.save(new Livro("Futuro Imaginado", "Ana Martins", GeneroLiterario.FICCAO_CIENTIFICA));
 
-        bibliotecarioRepository.addOne(new Bibliotecario("Maria Admin", "maria@biblioteca.com"));
-        bibliotecarioRepository.addOne(new Bibliotecario("Joao Admin", "joao@biblioteca.com"));
+        bibliotecarioRepository.save(new Bibliotecario("Maria Admin", "maria@biblioteca.com"));
+        bibliotecarioRepository.save(new Bibliotecario("Joao Admin", "joao@biblioteca.com"));
         // -------------------------------
 
         var menu = new Menu();
