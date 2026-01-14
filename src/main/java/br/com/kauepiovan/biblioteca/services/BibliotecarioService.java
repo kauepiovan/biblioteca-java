@@ -12,7 +12,7 @@ public class BibliotecarioService {
     }
 
     private boolean emailExists(String email) {
-        return !repository.getOne(email).isEmpty();
+        return repository.findByEmail(email).isPresent() ? true : false;
     }
 
     public void cadastrarBibliotecario(String nome, String email) {
@@ -20,11 +20,11 @@ public class BibliotecarioService {
             throw new IllegalStateException("Email informado ja existe cadastro: " + email);
         }
         var b = new Bibliotecario(nome, email);
-        repository.addOne(b);
+        repository.save(b);
     }
 
     public void listarBibliotecarios() {
-        var items = repository.getAll();
+        var items = repository.findAll();
         System.out.println("\n=== Lista de Bibliotecários ===");
         if (items.isEmpty()) {
             System.out.println("Nenhum bibliotecario cadastrado.");

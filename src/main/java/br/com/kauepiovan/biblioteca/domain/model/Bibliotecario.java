@@ -3,15 +3,15 @@ package br.com.kauepiovan.biblioteca.domain.model;
 import java.util.UUID;
 
 public class Bibliotecario extends Pessoa{
-    private UUID matricula;
+    private UUID id;
 
     public Bibliotecario(String nome, String email){ 
         super(nome, email);
-        this.matricula = UUID.randomUUID();
+        this.id = UUID.randomUUID();
     }
 
     public UUID getMatricula() {
-        return matricula;
+        return id;
     }
 
     @Override
