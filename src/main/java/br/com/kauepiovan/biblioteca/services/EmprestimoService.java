@@ -1,13 +1,13 @@
 package br.com.kauepiovan.biblioteca.services;
 
-import br.com.kauepiovan.biblioteca.repository.EmprestimoRepository;
-import br.com.kauepiovan.biblioteca.repository.LivroRepository;
-import br.com.kauepiovan.biblioteca.repository.UsuarioRepository;
-import br.com.kauepiovan.biblioteca.repository.Impl.BibliotecarioRepositoryImpl;
-import br.com.kauepiovan.biblioteca.repository.Impl.EmprestimoRepositoryImpl;
-import br.com.kauepiovan.biblioteca.repository.Impl.LivroRepositoryImpl;
-import br.com.kauepiovan.biblioteca.repository.Impl.UsuarioRepositoryImpl;
-import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
+import br.com.kauepiovan.biblioteca.repository.impl.BibliotecarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.EmprestimoRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.LivroRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.interfaces.BibliotecarioRepository;
+import br.com.kauepiovan.biblioteca.repository.interfaces.EmprestimoRepository;
+import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
+import br.com.kauepiovan.biblioteca.repository.interfaces.UsuarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 
 import java.util.UUID;

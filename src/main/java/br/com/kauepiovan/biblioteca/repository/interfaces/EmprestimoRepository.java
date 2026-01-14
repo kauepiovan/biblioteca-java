@@ -1,4 +1,4 @@
-package br.com.kauepiovan.biblioteca.repository;
+package br.com.kauepiovan.biblioteca.repository.interfaces;
 
 import java.util.UUID;
 
