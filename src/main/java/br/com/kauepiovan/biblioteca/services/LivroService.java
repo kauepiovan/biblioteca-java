@@ -2,7 +2,7 @@ package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.domain.model.Livro;
-import br.com.kauepiovan.biblioteca.repository.LivroRepository;
+import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
 
 public class LivroService {
 

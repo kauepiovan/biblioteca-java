@@ -2,7 +2,7 @@ package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
-import br.com.kauepiovan.biblioteca.repository.Impl.UsuarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
 
 public class UsuarioService {
 

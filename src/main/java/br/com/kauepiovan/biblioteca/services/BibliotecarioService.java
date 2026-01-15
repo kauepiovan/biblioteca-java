@@ -1,7 +1,7 @@
 package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
-import br.com.kauepiovan.biblioteca.repository.BibliotecarioRepository;
+import br.com.kauepiovan.biblioteca.repository.interfaces.BibliotecarioRepository;
 
 public class BibliotecarioService {
 
