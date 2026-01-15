@@ -53,3 +53,5 @@ logs/
 
 # Keep the pom.xml tracked
 !pom.xml
+
+anotacoes.md
