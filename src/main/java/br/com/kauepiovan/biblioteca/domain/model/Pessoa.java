@@ -3,9 +3,9 @@ package br.com.kauepiovan.biblioteca.domain.model;
 import java.util.UUID;
 
 public abstract class Pessoa {
-    public UUID id;
-    public String nome;
-    public String email;
+    private UUID id;
+    private String nome;
+    private String email;
 
     Pessoa(String nome, String email) {
         this.id = UUID.randomUUID();
