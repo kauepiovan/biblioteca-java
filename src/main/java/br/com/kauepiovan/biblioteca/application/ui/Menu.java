@@ -1,4 +1,4 @@
-package br.com.kauepiovan.biblioteca.domain.model;
+package br.com.kauepiovan.biblioteca.application.ui;
 
 public class Menu {
 
