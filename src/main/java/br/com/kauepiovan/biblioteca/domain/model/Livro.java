@@ -6,11 +6,11 @@ import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
 
 public class Livro {
-    public UUID id;
-    public String titulo;
-    public String autor;
-    public GeneroLiterario categoria;
-    public StatusLivro status;
+    private UUID id;
+    private String titulo;
+    private String autor;
+    private GeneroLiterario categoria;
+    private StatusLivro status;
 
     public Livro(String titulo, String autor, GeneroLiterario categoria) {
         this.id = UUID.randomUUID();
