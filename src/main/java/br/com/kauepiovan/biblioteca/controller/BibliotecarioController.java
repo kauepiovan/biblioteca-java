@@ -15,7 +15,6 @@ public class BibliotecarioController {
 
     public void cadastrar() {
         try {
-            input.nextLine();
             System.out.println("Digite o nome do bibliotecario: ");
             var nomeBibliotecario = input.nextLine();
             System.out.println("Digite o email do bibliotecario: ");

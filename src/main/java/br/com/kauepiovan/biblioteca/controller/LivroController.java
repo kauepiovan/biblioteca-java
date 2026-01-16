@@ -16,14 +16,10 @@ public class LivroController {
 
     public void cadastrar() {
         try {
-            input.nextLine();
-
             System.out.println("Digite o titulo do livro: ");
             var tituloLivro = input.nextLine();
-
             System.out.println("Digite o autor do livro: ");
             var autorLivro = input.nextLine();
-
             System.out.println("Selecione o categoria do livro: ");
             System.out.println(
                     "[ 1 - Suspense | 2 - Acao e Aventura | 3 - Fantasia | 4 - ficção científica ]");

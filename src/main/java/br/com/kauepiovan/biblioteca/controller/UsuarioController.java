@@ -17,7 +17,6 @@ public class UsuarioController {
     // cadastrar
     public void cadastrar() {
         try {
-            input.nextLine();
             System.out.println("Digite o nome do usuario: ");
             var nomeUsuario = input.next();
             System.out.println("Digite o email do usuario: ");

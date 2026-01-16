@@ -16,17 +16,12 @@ public class EmprestimoController {
 
     public void cadastrar() {
         try {
-            input.nextLine();
-
             System.out.println("Digite o email do usuario: ");
             var emailUsuarioEmprestimo = input.nextLine();
-
             System.out.println("Digite o titulo do livro: ");
             var tituloLivroEmprestimo = input.nextLine();
-
             System.out.println("Digite o email do bibliotecario responsavel: ");
             var emailBibliotecario = input.nextLine();
-
             emprestimoService.realizarEmprestimo(emailUsuarioEmprestimo, tituloLivroEmprestimo, emailBibliotecario);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
