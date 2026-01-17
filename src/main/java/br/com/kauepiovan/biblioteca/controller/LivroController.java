@@ -1,7 +1,6 @@
 package br.com.kauepiovan.biblioteca.controller;
 
 import java.util.Scanner;
-import java.util.List;
 
 import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.services.LivroService;

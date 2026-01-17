@@ -1,8 +1,8 @@
 package br.com.kauepiovan.biblioteca.domain.model;
 
 import java.util.ArrayList;
-
 import java.util.List;
+import java.util.Objects;
 
 import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 
@@ -55,5 +55,18 @@ public class Usuario extends Pessoa {
                 "tipo=" + tipo + ",\n" +
                 "limite_de_livros=" + limiteLivros + ",\n" +
                 "livros_emprestados=" + livrosEmprestados + "\n}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(getId(), usuario.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

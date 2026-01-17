@@ -1,6 +1,7 @@
 package br.com.kauepiovan.biblioteca.domain.model;
 
 import java.util.UUID;
+import java.util.Objects;
 
 import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
@@ -62,5 +63,18 @@ public class Livro {
                "autor=" + getAutor() + ",\n" +
                "categoria=" + getCategoria() + ",\n" +
                "status=" + getStatus() + "\n}" ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Livro livro = (Livro) o;
+        return Objects.equals(id, livro.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
