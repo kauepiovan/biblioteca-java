@@ -1,6 +1,9 @@
 # Maven
 /target/
 
+/docs
+txt.md
+
 # Compiled class files
 *.class
 

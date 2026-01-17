@@ -17,7 +17,7 @@ public abstract class InMemoryRepository<T, ID> {
     }
     
     public List<T> findAll() {
-        return data;
+        return new ArrayList<>(data);
     }
 
     public T save(T entity) {

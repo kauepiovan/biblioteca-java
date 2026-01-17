@@ -9,9 +9,12 @@ import br.com.kauepiovan.biblioteca.repository.interfaces.EmprestimoRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.UsuarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
+import br.com.kauepiovan.biblioteca.exceptions.BookAlreadyBorrowedException;
+import br.com.kauepiovan.biblioteca.exceptions.BookNotBorrowedException;
 import br.com.kauepiovan.biblioteca.exceptions.BookNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.IdNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.LibrarianNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.LimitBookReachedException;
 import br.com.kauepiovan.biblioteca.exceptions.UserNotFoundException;
 
 import java.util.UUID;
@@ -65,12 +68,11 @@ public class EmprestimoService {
         var bibliotecario = findBibliotecario(emailBibliotecario);
 
         if (usuario.getLivrosEmprestados().size() + 1 > usuario.getLimiteLivros()) {
-            throw new IllegalStateException(
-                    "Usuario ja atingiu o limite de emprestimos de " + usuario.getLimiteLivros());
+            throw new LimitBookReachedException();
         }
 
         if (livro.getStatus() == StatusLivro.EMPRESTADO) {
-            throw new IllegalStateException("Livro ja esta sendo emprestado para outro usuario");
+            throw new BookAlreadyBorrowedException();
         }
 
         usuario.criarEmprestimo(livro);
@@ -83,13 +85,13 @@ public class EmprestimoService {
         emprestimoRepository.save(emprestimo);
     }
 
-    public void finalizarEmprestimo(UUID id) throws IdNotFoundException {
+    public void finalizarEmprestimo(UUID id) throws Exception {
         Emprestimo emprestimo = findEmprestimo(id);
         Usuario usuario = emprestimo.getUsuario();
         Livro livro = emprestimo.getLivro();
 
         if (!usuario.getLivrosEmprestados().contains(livro)) {
-            throw new IllegalStateException("O livro informado nao esta sendo emprestado para este usuario.");
+            throw new BookNotBorrowedException();
         }
 
         var copyLivrosEmprestados = usuario.getLivrosEmprestados();

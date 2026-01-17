@@ -32,7 +32,7 @@ public class BibliotecarioService {
             return;
         }
         for (var b : items) {
-            System.out.println("- Nome: " + b.getNome() + " | Email: " + b.getEmail() + " | Matricula: " + b.getMatricula());
+            System.out.println("- Nome: " + b.getNome() + " | Email: " + b.getEmail() + " | Matricula: " + b.getId());
         }
     }
 
