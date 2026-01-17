@@ -5,8 +5,8 @@ import java.util.Scanner;
 import br.com.kauepiovan.biblioteca.services.BibliotecarioService;
 
 public class BibliotecarioController {
-    private BibliotecarioService bibliotecarioService;
-    private Scanner input;
+    private final BibliotecarioService bibliotecarioService;
+    private final Scanner input;
 
     public BibliotecarioController(BibliotecarioService bibliotecarioService, Scanner input) {
         this.bibliotecarioService = bibliotecarioService;
@@ -29,7 +29,17 @@ public class BibliotecarioController {
 
     public void listar() {
         try {
-            bibliotecarioService.listarBibliotecarios();
+            var biblio = bibliotecarioService.listarBibliotecarios();
+            if (biblio.isEmpty()) {
+                System.out.println("Nenhum bibliotecario cadastrado.");
+                return;
+            }
+            System.out.println("--- Lista de Bibliotecários ---");
+            int i = 1;
+            for (var b : biblio) {
+                System.out.println(String.format("%d) %s - %s | id=%s", i++, b.getNome(), b.getEmail(), b.getId()));
+            }
+            System.out.println("-------------------------------");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

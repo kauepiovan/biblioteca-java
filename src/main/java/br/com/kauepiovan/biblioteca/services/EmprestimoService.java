@@ -17,6 +17,7 @@ import br.com.kauepiovan.biblioteca.exceptions.LibrarianNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.LimitBookReachedException;
 import br.com.kauepiovan.biblioteca.exceptions.UserNotFoundException;
 
+import java.util.List;
 import java.util.UUID;
 
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
@@ -107,25 +108,9 @@ public class EmprestimoService {
         emprestimoRepository.save(emprestimo);
     }
 
-    public void listarEmprestimos() {
-        var emprestimos = emprestimoRepository.findAll();
-        System.out.println("\n=== Lista de Empréstimos ===");
-        if (emprestimos.isEmpty()) {
-            System.out.println("Nenhum empréstimo registrado.");
-            return;
-        }
-        for (var emprestimo : emprestimos) {
-            System.out.println("- Id: " + emprestimo.getId());
-            var usuario = emprestimo.getUsuario();
-            System.out.println("  Usuário: " + usuario.getNome() + " | Email: " + usuario.getEmail());
-            var livro = emprestimo.getLivro();
-            System.out.println("  Livro: " + livro.getTitulo() + " | Autor: " + livro.getAutor() + " | Status: "
-                + livro.getStatus());
-            var bibliotecario = emprestimo.getBibliotecario();
-            System.out.println("  Bibliotecario: " + bibliotecario.getNome() + " | Email: " + bibliotecario.getEmail());
-            System.out.println("  Data criação: " + emprestimo.getDataCriacao() + " | Vencimento: "
-                    + emprestimo.getDataVencimento() + " | Finalizado: " + emprestimo.getFinalizado());
-        }
+    public List<Emprestimo> listarEmprestimos() {
+        return emprestimoRepository.findAll();
+            
     }
 
 }

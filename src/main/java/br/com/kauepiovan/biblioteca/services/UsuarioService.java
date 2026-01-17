@@ -1,5 +1,7 @@
 package br.com.kauepiovan.biblioteca.services;
 
+import java.util.List;
+
 import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 import br.com.kauepiovan.biblioteca.exceptions.EmailAlreadyExistException;
@@ -14,7 +16,7 @@ public class UsuarioService {
     }
 
     private boolean emailExists(String email) {
-        return repository.findByEmail(email).isPresent() ? true : false;
+        return repository.findByEmail(email).isPresent();
     }
 
     public void cadastrarUsuario(String nome, String email, TipoUsuario tipo) throws EmailAlreadyExistException {
@@ -25,27 +27,8 @@ public class UsuarioService {
         repository.save(usuario);
     }
 
-    public void listarUsuarios() {
-        var usuarios = repository.findAll();
-        System.out.println("\n=== Lista de Usuários ===");
-        if (usuarios.isEmpty()) {
-            System.out.println("Nenhum usuário cadastrado.");
-            return;
-        }
-        for (var usuario : usuarios) {
-            System.out.println("- Nome: " + usuario.getNome() + " | Email: " + usuario.getEmail() + " | Tipo: "
-                    + usuario.getTipo());
-            var emprestados = usuario.getLivrosEmprestados();
-            if (emprestados == null || emprestados.isEmpty()) {
-                System.out.println("  Livros emprestados: nenhum");
-            } else {
-                System.out.println("  Livros emprestados:");
-                for (var livro : emprestados) {
-                    System.out.println("    - " + livro.getTitulo() + " | Autor: " + livro.getAutor() + " | Status: "
-                            + livro.getStatus());
-                }
-            }
-        }
+    public List<Usuario> listarUsuarios() {
+        return repository.findAll();
     }
 
 }

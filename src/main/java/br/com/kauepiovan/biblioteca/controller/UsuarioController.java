@@ -18,11 +18,17 @@ public class UsuarioController {
     public void cadastrar() {
         try {
             System.out.println("Digite o nome do usuario: ");
-            var nomeUsuario = input.next();
+            var nomeUsuario = input.nextLine();
             System.out.println("Digite o email do usuario: ");
-            var emailUsuario = input.next();
+            var emailUsuario = input.nextLine();
             System.out.println("especifique o tipo { 1 - Usuario comum | 2 - Usuario premium }");
-            var tipoUsuario = input.nextInt() == 1 ? TipoUsuario.COMUM : TipoUsuario.PREMIUM;
+            var tipoLine = input.nextLine().trim();
+            TipoUsuario tipoUsuario;
+            try {
+                tipoUsuario = Integer.parseInt(tipoLine) == 1 ? TipoUsuario.COMUM : TipoUsuario.PREMIUM;
+            } catch (NumberFormatException e) {
+                tipoUsuario = TipoUsuario.COMUM;
+            }
             usuarioService.cadastrarUsuario(nomeUsuario, emailUsuario, tipoUsuario);
             System.out.println("Usuario: | " + nomeUsuario + " | " + emailUsuario + " | " + tipoUsuario
                     + " | " + "Criado com sucesso!");
@@ -34,7 +40,24 @@ public class UsuarioController {
     // listar
     public void listar() {
         try {
-            usuarioService.listarUsuarios();
+            var usuarios = usuarioService.listarUsuarios();
+            if (usuarios.isEmpty()) {
+                System.out.println("Nenhum usuário cadastrado.");
+                return;
+            }
+            System.out.println("--- Lista de Usuários ---");
+            int i = 1;
+            for (var u : usuarios) {
+                System.out.println(String.format("%d) %s - %s | Tipo: %s | Limite: %d | Emprestados: %d",
+                        i++, u.getNome(), u.getEmail(), u.getTipo(), u.getLimiteLivros(), u.getLivrosEmprestados().size()));
+                if (!u.getLivrosEmprestados().isEmpty()) {
+                    System.out.println("   Livros emprestados:");
+                    for (var l : u.getLivrosEmprestados()) {
+                        System.out.println("    - " + l.getTitulo() + " (" + l.getAutor() + ")");
+                    }
+                }
+            }
+            System.out.println("-------------------------");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
