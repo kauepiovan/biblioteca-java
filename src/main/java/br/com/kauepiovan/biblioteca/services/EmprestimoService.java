@@ -9,6 +9,10 @@ import br.com.kauepiovan.biblioteca.repository.interfaces.EmprestimoRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.UsuarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
+import br.com.kauepiovan.biblioteca.exceptions.BookNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.IdNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.LibrarianNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.UserNotFoundException;
 
 import java.util.UUID;
 
@@ -35,27 +39,27 @@ public class EmprestimoService {
         this.bibliotecarioRepository = bibliotecarioRepository;
     }
 
-    private Usuario findUsuario(String email) {
+    private Usuario findUsuario(String email) throws UserNotFoundException{
         return usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario não encontrado: " + email));
+                .orElseThrow(() -> new UserNotFoundException());
     }
 
-    private Livro findLivro(String titulo) {
+    private Livro findLivro(String titulo) throws BookNotFoundException {
         return livroRepository.findByTitulo(titulo)
-                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado: " + titulo));
+                .orElseThrow(() -> new BookNotFoundException());
     }
 
-    private Emprestimo findEmprestimo(UUID id) {
+    private Emprestimo findEmprestimo(UUID id) throws IdNotFoundException {
         return emprestimoRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Id fornecido não encontrado: " + id));
+                .orElseThrow(() -> new IdNotFoundException());
     }
 
-    private Bibliotecario findBibliotecario(String email) {
+    private Bibliotecario findBibliotecario(String email) throws LibrarianNotFoundException {
         return bibliotecarioRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Bibliotecario não encontrado: " + email));
+                .orElseThrow(() -> new LibrarianNotFoundException());
     }
 
-    public void realizarEmprestimo(String email, String titulo, String emailBibliotecario) {
+    public void realizarEmprestimo(String email, String titulo, String emailBibliotecario) throws Exception {
         Usuario usuario = findUsuario(email);
         Livro livro = findLivro(titulo);
         var bibliotecario = findBibliotecario(emailBibliotecario);
@@ -79,7 +83,7 @@ public class EmprestimoService {
         emprestimoRepository.save(emprestimo);
     }
 
-    public void finalizarEmprestimo(UUID id) {
+    public void finalizarEmprestimo(UUID id) throws IdNotFoundException {
         Emprestimo emprestimo = findEmprestimo(id);
         Usuario usuario = emprestimo.getUsuario();
         Livro livro = emprestimo.getLivro();

@@ -2,6 +2,7 @@ package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
+import br.com.kauepiovan.biblioteca.exceptions.EmailAlreadyExistException;
 import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
 
 public class UsuarioService {
@@ -16,9 +17,9 @@ public class UsuarioService {
         return repository.findByEmail(email).isPresent() ? true : false;
     }
 
-    public void cadastrarUsuario(String nome, String email, TipoUsuario tipo) {
+    public void cadastrarUsuario(String nome, String email, TipoUsuario tipo) throws EmailAlreadyExistException {
         if (emailExists(email)) {
-            throw new IllegalStateException("Email informado ja existe cadastro: " + email);
+            throw new EmailAlreadyExistException();
         }
         var usuario = new Usuario(nome, email, tipo);
         repository.save(usuario);

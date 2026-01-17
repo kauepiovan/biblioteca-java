@@ -27,7 +27,7 @@ public class UsuarioController {
             System.out.println("Usuario: | " + nomeUsuario + " | " + emailUsuario + " | " + tipoUsuario
                     + " | " + "Criado com sucesso!");
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -36,7 +36,7 @@ public class UsuarioController {
         try {
             usuarioService.listarUsuarios();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

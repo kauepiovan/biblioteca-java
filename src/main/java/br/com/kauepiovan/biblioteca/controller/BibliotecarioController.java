@@ -23,7 +23,7 @@ public class BibliotecarioController {
             System.out.println(
                     "Bibliotecario: | " + nomeBibliotecario + " | " + emailBibliotecario + " | Criado com sucesso!");
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -31,7 +31,7 @@ public class BibliotecarioController {
         try {
             bibliotecarioService.listarBibliotecarios();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

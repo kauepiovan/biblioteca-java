@@ -24,7 +24,7 @@ public class EmprestimoController {
             var emailBibliotecario = input.nextLine();
             emprestimoService.realizarEmprestimo(emailUsuarioEmprestimo, tituloLivroEmprestimo, emailBibliotecario);
         } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -32,7 +32,7 @@ public class EmprestimoController {
         try {
             emprestimoService.listarEmprestimos();
         } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -43,7 +43,7 @@ public class EmprestimoController {
             var id = input.nextLine();
             emprestimoService.finalizarEmprestimo(UUID.fromString(id));
         } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

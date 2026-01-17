@@ -1,6 +1,7 @@
 package br.com.kauepiovan.biblioteca.services;
 
 import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
+import br.com.kauepiovan.biblioteca.exceptions.EmailAlreadyExistException;
 import br.com.kauepiovan.biblioteca.repository.interfaces.BibliotecarioRepository;
 
 public class BibliotecarioService {
@@ -15,9 +16,9 @@ public class BibliotecarioService {
         return repository.findByEmail(email).isPresent() ? true : false;
     }
 
-    public void cadastrarBibliotecario(String nome, String email) {
+    public void cadastrarBibliotecario(String nome, String email) throws EmailAlreadyExistException {
         if (emailExists(email)) {
-            throw new IllegalStateException("Email informado ja existe cadastro: " + email);
+            throw new EmailAlreadyExistException();
         }
         var b = new Bibliotecario(nome, email);
         repository.save(b);

@@ -31,7 +31,7 @@ public class LivroController {
 
             livroService.cadastrarLivro(tituloLivro, autorLivro, categoriaLivro);
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
@@ -39,7 +39,7 @@ public class LivroController {
         try {
             livroService.listarLivros();
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
