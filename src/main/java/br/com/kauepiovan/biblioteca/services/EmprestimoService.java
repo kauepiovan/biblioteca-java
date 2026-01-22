@@ -4,10 +4,6 @@ import br.com.kauepiovan.biblioteca.repository.impl.BibliotecarioRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.EmprestimoRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.LivroRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
-import br.com.kauepiovan.biblioteca.repository.interfaces.BibliotecarioRepository;
-import br.com.kauepiovan.biblioteca.repository.interfaces.EmprestimoRepository;
-import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
-import br.com.kauepiovan.biblioteca.repository.interfaces.UsuarioRepository;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 import br.com.kauepiovan.biblioteca.exceptions.BookAlreadyBorrowedException;
 import br.com.kauepiovan.biblioteca.exceptions.BookNotBorrowedException;
@@ -27,10 +23,10 @@ import br.com.kauepiovan.biblioteca.domain.model.Livro;
 
 public class EmprestimoService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final LivroRepository livroRepository;
-    private final EmprestimoRepository emprestimoRepository;
-    private final BibliotecarioRepository bibliotecarioRepository;
+    private final UsuarioRepositoryImpl usuarioRepository;
+    private final LivroRepositoryImpl livroRepository;
+    private final EmprestimoRepositoryImpl emprestimoRepository;
+    private final BibliotecarioRepositoryImpl bibliotecarioRepository;
 
     public EmprestimoService(
             UsuarioRepositoryImpl usuarioRepository,
@@ -63,8 +59,8 @@ public class EmprestimoService {
                 .orElseThrow(() -> new LibrarianNotFoundException());
     }
 
-    public void realizarEmprestimo(String email, String titulo, String emailBibliotecario) throws Exception {
-        Usuario usuario = findUsuario(email);
+    public void realizarEmprestimo(String emailUsuario, String titulo, String emailBibliotecario) throws Exception {
+        Usuario usuario = findUsuario(emailUsuario);
         Livro livro = findLivro(titulo);
         var bibliotecario = findBibliotecario(emailBibliotecario);
 
