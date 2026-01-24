@@ -1,8 +1,12 @@
 package com.kauepiovan.biblioteca.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +20,11 @@ import br.com.kauepiovan.biblioteca.domain.model.Emprestimo;
 import br.com.kauepiovan.biblioteca.domain.model.Livro;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 import br.com.kauepiovan.biblioteca.exceptions.BookAlreadyBorrowedException;
+import br.com.kauepiovan.biblioteca.exceptions.BookNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.IdNotFoundException;
+import br.com.kauepiovan.biblioteca.exceptions.LibrarianNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.LimitBookReachedException;
+import br.com.kauepiovan.biblioteca.exceptions.UserNotFoundException;
 import br.com.kauepiovan.biblioteca.repository.impl.BibliotecarioRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.EmprestimoRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.LivroRepositoryImpl;
@@ -61,7 +69,7 @@ public class EmprestimoServiceTest {
         Bibliotecario bibliotecarioEmprestimo = bibliotecarioService.listarBibliotecarios().getFirst();
         Livro livroEmprestimo = livroService.listarLivros().getFirst();
 
-
+        var date = LocalDate.now();
         emprestimoService.realizarEmprestimo("usuario@email.com", "titulo do livro", "bibli@email.com");
         Emprestimo emprestimo = emprestimoService.listarEmprestimos().getLast();
 
@@ -72,6 +80,8 @@ public class EmprestimoServiceTest {
         assertEquals(StatusLivro.EMPRESTADO, livroEmprestimo.getStatus());
         assertTrue(usuarioEmprestimo.getLimiteLivros() <= 3);
         assertTrue(usuarioEmprestimo.getLivrosEmprestados().contains(livroEmprestimo));
+        assertTrue(date.equals(emprestimo.getDataCriacao()));
+        assertTrue(date.plusDays(7).equals(emprestimo.getDataVencimento()));
 
     }
 
@@ -133,7 +143,113 @@ public class EmprestimoServiceTest {
         
     }
 
-    // TODO - FINALIZAR
+    @Test
+    @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
+    void deveLancarExceptionSeUsuarioNaoEncontrado() throws Exception { 
+        usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
 
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        
+        livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        assertThrows(UserNotFoundException.class,() -> {
+            emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro1", "bibli@email.com");
+        });
+    }
+
+    @Test
+    @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
+    void deveLancarExceptionSeLivroNaoEncontrado() throws Exception { 
+        usuarioService.cadastrarUsuario("usuario", "usuario1@email.com", TipoUsuario.COMUM);
+
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        
+        livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        assertThrows(BookNotFoundException.class,() -> {
+            emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro2", "bibli@email.com");
+        });
+    }
+
+    @Test
+    @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
+    void deveLancarExceptionSeBibliotecarioNaoEncontrado() throws Exception { 
+        usuarioService.cadastrarUsuario("usuario", "usuario1@email.com", TipoUsuario.COMUM);
+
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        
+        livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        assertThrows(LibrarianNotFoundException.class,() -> {
+            emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro1", "b@email.com");
+        });
+    }
+
+    @Test
+    @DisplayName("")
+    void deveFinalizarEmprestimo() throws Exception {
+        usuarioService.cadastrarUsuario("usuario", "usuario@email.com", TipoUsuario.COMUM);
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        livroService.cadastrarLivro("titulo do livro", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        Usuario usuarioEmprestimo = usuarioService.listarUsuarios().getFirst();
+        Livro livroEmprestimo = livroService.listarLivros().getFirst();
+
+        emprestimoService.realizarEmprestimo("usuario@email.com", "titulo do livro", "bibli@email.com");
+
+        Emprestimo emprestimo = emprestimoService.listarEmprestimos().getFirst();
+
+        emprestimoService.finalizarEmprestimo(emprestimo.getId());
+
+        assertFalse(usuarioEmprestimo.getLivrosEmprestados().contains(livroEmprestimo));
+        assertTrue(livroEmprestimo.getStatus().equals(StatusLivro.DISPONIVEL));
+        assertTrue(emprestimo.getFinalizado());
+
+    }
+
+    @Test
+    @DisplayName("Deve lancar uma exception se o id do emprestimo nao ser econtrado")
+    void deveLancarExceptionSeEmprestimoNaoEncontrado() throws Exception {
+        usuarioService.cadastrarUsuario("usuario", "usuario@email.com", TipoUsuario.COMUM);
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        livroService.cadastrarLivro("titulo do livro", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        emprestimoService.realizarEmprestimo("usuario@email.com", "titulo do livro", "bibli@email.com");
+
+        assertThrows(IdNotFoundException.class, () -> {
+            emprestimoService.finalizarEmprestimo(UUID.randomUUID());
+        });
+
+    }
     
+    @Test
+    @DisplayName("")
+    void deveListarTodosOsEmprestimos() throws Exception {
+        usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
+        usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
+
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        
+        livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro2", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro3", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro4", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro5", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro6", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro7", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro8", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro1", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro2", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro3", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro4", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro5", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro6", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro7", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro8", "bibli@email.com");
+
+        assertEquals(8, emprestimoService.listarEmprestimos().size());
+    }
+
+
 }
