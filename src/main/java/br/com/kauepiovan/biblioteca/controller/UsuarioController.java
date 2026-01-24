@@ -63,7 +63,5 @@ public class UsuarioController {
         }
     }
 
-    // TODO - remover
 
-    // TODO - atualizar
 }
