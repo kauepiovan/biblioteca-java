@@ -6,7 +6,6 @@ import br.com.kauepiovan.biblioteca.repository.impl.LivroRepositoryImpl;
 import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
 import br.com.kauepiovan.biblioteca.exceptions.BookAlreadyBorrowedException;
-import br.com.kauepiovan.biblioteca.exceptions.BookNotBorrowedException;
 import br.com.kauepiovan.biblioteca.exceptions.BookNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.IdNotFoundException;
 import br.com.kauepiovan.biblioteca.exceptions.LibrarianNotFoundException;
@@ -86,10 +85,6 @@ public class EmprestimoService {
         Emprestimo emprestimo = findEmprestimo(id);
         Usuario usuario = emprestimo.getUsuario();
         Livro livro = emprestimo.getLivro();
-
-        if (!usuario.getLivrosEmprestados().contains(livro)) {
-            throw new BookNotBorrowedException();
-        }
 
         var copyLivrosEmprestados = usuario.getLivrosEmprestados();
         copyLivrosEmprestados.remove(livro);
