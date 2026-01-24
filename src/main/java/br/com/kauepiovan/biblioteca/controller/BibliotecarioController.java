@@ -45,7 +45,4 @@ public class BibliotecarioController {
         }
     }
 
-    // TODO - remover
-
-    // TODO - Atualizar
 }
