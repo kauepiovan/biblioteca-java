@@ -2,7 +2,6 @@ package br.com.kauepiovan.biblioteca.domain.model;
 
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.Objects;
 
 public class Emprestimo {
     private UUID id;
@@ -48,27 +47,4 @@ public class Emprestimo {
         this.finalizado = finalizado;
     }
 
-    @Override
-    public String toString() {
-        return "{\nid=" + getId() + ",\n" + 
-               "usuario=" + getUsuario() + ",\n" + 
-               "livro=" + getLivro() + ",\n" + 
-               "bibliotecario=" + getBibliotecario() + ",\n" + 
-               "data_criacao=" + getDataCriacao() + ",\n" + 
-               "data_vencimento=" + getDataVencimento() + ",\n" + 
-               "finalizado=" + getFinalizado() + ",\n}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Emprestimo that = (Emprestimo) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
