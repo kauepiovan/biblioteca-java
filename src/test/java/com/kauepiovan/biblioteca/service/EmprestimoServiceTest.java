@@ -1,5 +1,139 @@
 package com.kauepiovan.biblioteca.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
+import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
+import br.com.kauepiovan.biblioteca.domain.enums.TipoUsuario;
+import br.com.kauepiovan.biblioteca.domain.model.Bibliotecario;
+import br.com.kauepiovan.biblioteca.domain.model.Emprestimo;
+import br.com.kauepiovan.biblioteca.domain.model.Livro;
+import br.com.kauepiovan.biblioteca.domain.model.Usuario;
+import br.com.kauepiovan.biblioteca.exceptions.BookAlreadyBorrowedException;
+import br.com.kauepiovan.biblioteca.exceptions.LimitBookReachedException;
+import br.com.kauepiovan.biblioteca.repository.impl.BibliotecarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.EmprestimoRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.LivroRepositoryImpl;
+import br.com.kauepiovan.biblioteca.repository.impl.UsuarioRepositoryImpl;
+import br.com.kauepiovan.biblioteca.services.BibliotecarioService;
+import br.com.kauepiovan.biblioteca.services.EmprestimoService;
+import br.com.kauepiovan.biblioteca.services.LivroService;
+import br.com.kauepiovan.biblioteca.services.UsuarioService;
+
 public class EmprestimoServiceTest {
+    private UsuarioRepositoryImpl usuarioRepository;
+    private LivroRepositoryImpl livroRepository;
+    private EmprestimoRepositoryImpl emprestimoRepository;
+    private BibliotecarioRepositoryImpl bibliotecarioRepository;
+    private UsuarioService usuarioService;
+    private BibliotecarioService bibliotecarioService;
+    private LivroService livroService;
+    private EmprestimoService emprestimoService;
+
+    @BeforeEach
+    void setup() {
+        usuarioRepository = new UsuarioRepositoryImpl();
+        livroRepository = new LivroRepositoryImpl();
+        emprestimoRepository = new EmprestimoRepositoryImpl();
+        bibliotecarioRepository = new BibliotecarioRepositoryImpl();
+
+        usuarioService = new UsuarioService(usuarioRepository);
+        bibliotecarioService = new BibliotecarioService(bibliotecarioRepository);
+        livroService = new LivroService(livroRepository);
+        emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository, bibliotecarioRepository);
+    }
+
+    @Test
+    @DisplayName("Deve cadastrar um emprestimo no repository")
+    void deveCadastrarUmEmprestimo() throws Exception { 
+
+        usuarioService.cadastrarUsuario("usuario", "usuario@email.com", TipoUsuario.COMUM);
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        livroService.cadastrarLivro("titulo do livro", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        Usuario usuarioEmprestimo = usuarioService.listarUsuarios().getFirst();
+        Bibliotecario bibliotecarioEmprestimo = bibliotecarioService.listarBibliotecarios().getFirst();
+        Livro livroEmprestimo = livroService.listarLivros().getFirst();
+
+
+        emprestimoService.realizarEmprestimo("usuario@email.com", "titulo do livro", "bibli@email.com");
+        Emprestimo emprestimo = emprestimoService.listarEmprestimos().getLast();
+
+        assertEquals(1, emprestimoRepository.findAll().size());
+        assertEquals(usuarioEmprestimo, emprestimo.getUsuario());
+        assertEquals(bibliotecarioEmprestimo, emprestimo.getBibliotecario());
+        assertEquals(livroEmprestimo, emprestimo.getLivro());
+        assertEquals(StatusLivro.EMPRESTADO, livroEmprestimo.getStatus());
+        assertTrue(usuarioEmprestimo.getLimiteLivros() <= 3);
+        assertTrue(usuarioEmprestimo.getLivrosEmprestados().contains(livroEmprestimo));
+
+    }
+
+    @Test
+    @DisplayName("Deve lancar um exception se o livro ja esta sendo emprestado")
+    void deveLancarExceptionSeLivroEstaSendoEmprestado() throws Exception { 
+        usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
+        usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
+        
+        livroService.cadastrarLivro("titulo do livro", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro", "bibli@email.com");
+        
+        assertThrows(BookAlreadyBorrowedException.class, () -> { 
+            emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro", "bibli@email.com");
+        });
+
+    }
+
+    
+    @Test
+    @DisplayName("Deve lancar uma exception se o usuario ultrapassar o limite de emprestimos de seu plano")
+    void deveLancarExceptionSeUsuarioUltrapassarLimiteDeEmprestimos() throws Exception { 
+        usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
+        usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
+
+        bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
+        
+        livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro2", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro3", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro4", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro5", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro6", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro7", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro8", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro9", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+        livroService.cadastrarLivro("titulo do livro10", "autor", GeneroLiterario.ACAO_E_AVENTURA);
+
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro1", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro2", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro3", "bibli@email.com");
+
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro4", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro5", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro6", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro7", "bibli@email.com");
+        emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro8", "bibli@email.com");
+
+        assertThrows(LimitBookReachedException.class, () -> {
+            emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro9", "bibli@email.com");
+        });
+
+        assertThrows(LimitBookReachedException.class, () -> {
+            emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro10", "bibli@email.com");
+        });
+        
+    }
+
+    // TODO - FINALIZAR
+
     
 }
