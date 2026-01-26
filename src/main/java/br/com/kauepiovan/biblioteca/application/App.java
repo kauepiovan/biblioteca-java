@@ -26,17 +26,22 @@ public class App {
         var input = new Scanner(System.in);
         var menu = new Menu();
 
-        var usuarioRepository = new UsuarioRepositoryImpl();
+        // JPA Initialization
+        var entityManagerFactory = jakarta.persistence.Persistence.createEntityManagerFactory("biblioteca-pu");
+        var entityManager = entityManagerFactory.createEntityManager();
+
+        var usuarioRepository = new UsuarioRepositoryImpl(entityManager);
         var usuarioService = new UsuarioService(usuarioRepository);
 
-        var livroRepository = new LivroRepositoryImpl();
+        var livroRepository = new LivroRepositoryImpl(entityManager);
         var livroService = new LivroService(livroRepository);
-        
-        var bibliotecarioRepository = new BibliotecarioRepositoryImpl();
+
+        var bibliotecarioRepository = new BibliotecarioRepositoryImpl(entityManager);
         var bibliotecarioService = new BibliotecarioService(bibliotecarioRepository);
-        
-        var emprestimoRepository = new EmprestimoRepositoryImpl();
-        var emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository, bibliotecarioRepository);
+
+        var emprestimoRepository = new EmprestimoRepositoryImpl(entityManager);
+        var emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository,
+                bibliotecarioRepository);
 
         var usuarioController = new UsuarioController(usuarioService, input);
         var bibliotecarioController = new BibliotecarioController(bibliotecarioService, input);
@@ -44,16 +49,24 @@ public class App {
         var emprestimoController = new EmprestimoController(emprestimoService, input);
 
         // --- Dados mockados iniciais ---
-        usuarioRepository.save(new Usuario("Alice Silva", "alice@example.com", TipoUsuario.COMUM));
-        usuarioRepository.save(new Usuario("Bruno Costa", "bruno@example.com", TipoUsuario.PREMIUM));
+        // usuarioRepository.save(new Usuario("Alice Silva", "alice@example.com",
+        // TipoUsuario.COMUM));
+        // usuarioRepository.save(new Usuario("Bruno Costa", "bruno@example.com",
+        // TipoUsuario.PREMIUM));
 
-        livroRepository.save(new Livro("O Misterio do Lago", "João Pereira", GeneroLiterario.SUSPENSE));
-        livroRepository.save(new Livro("A Jornada do Heroi", "Mariana Souza", GeneroLiterario.ACAO_E_AVENTURA));
-        livroRepository.save(new Livro("Reinos Fantasticos", "Carlos Lima", GeneroLiterario.FANTASIA));
-        livroRepository.save(new Livro("Futuro Imaginado", "Ana Martins", GeneroLiterario.FICCAO_CIENTIFICA));
+        // livroRepository.save(new Livro("O Misterio do Lago", "João Pereira",
+        // GeneroLiterario.SUSPENSE));
+        // livroRepository.save(new Livro("A Jornada do Heroi", "Mariana Souza",
+        // GeneroLiterario.ACAO_E_AVENTURA));
+        // livroRepository.save(new Livro("Reinos Fantasticos", "Carlos Lima",
+        // GeneroLiterario.FANTASIA));
+        // livroRepository.save(new Livro("Futuro Imaginado", "Ana Martins",
+        // GeneroLiterario.FICCAO_CIENTIFICA));
 
-        bibliotecarioRepository.save(new Bibliotecario("Maria Admin", "maria@biblioteca.com"));
-        bibliotecarioRepository.save(new Bibliotecario("Joao Admin", "joao@biblioteca.com"));
+        // bibliotecarioRepository.save(new Bibliotecario("Maria Admin",
+        // "maria@biblioteca.com"));
+        // bibliotecarioRepository.save(new Bibliotecario("Joao Admin",
+        // "joao@biblioteca.com"));
         // -------------------------------
 
         int opcao;
@@ -68,7 +81,7 @@ public class App {
                 case 3 -> livroController.cadastrar();
                 case 4 -> usuarioController.listar();
                 case 5 -> bibliotecarioController.listar();
-                case 6 -> livroController.listar(); 
+                case 6 -> livroController.listar();
                 case 7 -> emprestimoController.listar();
                 case 8 -> emprestimoController.cadastrar();
                 case 9 -> emprestimoController.concluir();

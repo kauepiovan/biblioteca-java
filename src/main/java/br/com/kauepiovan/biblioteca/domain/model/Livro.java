@@ -3,14 +3,24 @@ package br.com.kauepiovan.biblioteca.domain.model;
 import java.util.UUID;
 
 import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
+import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 
 public class Livro {
+    @Id
     private UUID id;
     private String titulo;
     private String autor;
     private GeneroLiterario categoria;
     private StatusLivro status;
+
+    @Deprecated
+    protected Livro() {
+    }
 
     public Livro(String titulo, String autor, GeneroLiterario categoria) {
         this.id = UUID.randomUUID();
