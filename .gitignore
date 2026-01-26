@@ -58,3 +58,8 @@ logs/
 !pom.xml
 
 anotacoes.md
+
+# H2 Database
+/dados/
+*.mv.db
+*.trace.db

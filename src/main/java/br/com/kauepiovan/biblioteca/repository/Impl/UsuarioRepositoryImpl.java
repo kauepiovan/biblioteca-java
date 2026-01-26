@@ -3,23 +3,30 @@ package br.com.kauepiovan.biblioteca.repository.impl;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+
 import br.com.kauepiovan.biblioteca.domain.model.Usuario;
-import br.com.kauepiovan.biblioteca.repository.InMemoryRepository;
+import br.com.kauepiovan.biblioteca.repository.BaseRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.UsuarioRepository;
 
 public class UsuarioRepositoryImpl
-        extends InMemoryRepository<Usuario, UUID>
+        extends BaseRepository<Usuario, UUID>
         implements UsuarioRepository {
 
-    @Override
-    protected UUID getId(Usuario usuario) {
-        return usuario.getId();
+    public UsuarioRepositoryImpl(EntityManager entityManager) {
+        super(entityManager, Usuario.class);
     }
 
     @Override
     public Optional<Usuario> findByEmail(String email) {
-        return data.stream()
-                .filter(u -> u.getEmail().equals(email))
-                .findFirst();
+        try {
+            return Optional
+                    .of(entityManager.createQuery("SELECT u FROM Usuario u WHERE u.email = :email", Usuario.class)
+                            .setParameter("email", email)
+                            .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }
