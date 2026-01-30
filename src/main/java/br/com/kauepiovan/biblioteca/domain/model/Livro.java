@@ -3,7 +3,6 @@ package br.com.kauepiovan.biblioteca.domain.model;
 import java.util.UUID;
 
 import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
-import br.com.kauepiovan.biblioteca.domain.enums.GeneroLiterario;
 import br.com.kauepiovan.biblioteca.domain.enums.StatusLivro;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
