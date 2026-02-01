@@ -25,7 +25,7 @@ public class Menu {
         System.out.println("");
         System.out.println("0 - Sair do Sistema.");
         System.out.println("");
-        System.out.print("Selecione uma opcao: ");
+        System.out.print("\nSelecione uma opcao: ");
     }
 
 
