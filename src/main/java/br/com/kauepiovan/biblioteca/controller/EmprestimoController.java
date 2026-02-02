@@ -53,6 +53,7 @@ public class EmprestimoController {
 
     public void concluir() {
         try {
+            
             System.out.println("Digite o id do emprestimo: ");
             var id = input.nextLine();
             emprestimoService.finalizarEmprestimo(UUID.fromString(id));
