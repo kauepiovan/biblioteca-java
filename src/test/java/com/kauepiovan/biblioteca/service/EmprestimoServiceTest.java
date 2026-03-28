@@ -43,23 +43,41 @@ public class EmprestimoServiceTest {
     private BibliotecarioService bibliotecarioService;
     private LivroService livroService;
     private EmprestimoService emprestimoService;
+    private jakarta.persistence.EntityManagerFactory emf;
+    private jakarta.persistence.EntityManager em;
 
     @BeforeEach
     void setup() {
-        usuarioRepository = new UsuarioRepositoryImpl();
-        livroRepository = new LivroRepositoryImpl();
-        emprestimoRepository = new EmprestimoRepositoryImpl();
-        bibliotecarioRepository = new BibliotecarioRepositoryImpl();
+        java.util.Map<String, String> properties = new java.util.HashMap<>();
+        properties.put("javax.persistence.jdbc.url", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+        properties.put("hibernate.hbm2ddl.auto", "create-drop");
+
+        emf = jakarta.persistence.Persistence.createEntityManagerFactory("biblioteca-pu", properties);
+        em = emf.createEntityManager();
+
+        usuarioRepository = new UsuarioRepositoryImpl(em);
+        livroRepository = new LivroRepositoryImpl(em);
+        emprestimoRepository = new EmprestimoRepositoryImpl(em);
+        bibliotecarioRepository = new BibliotecarioRepositoryImpl(em);
 
         usuarioService = new UsuarioService(usuarioRepository);
         bibliotecarioService = new BibliotecarioService(bibliotecarioRepository);
         livroService = new LivroService(livroRepository);
-        emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository, bibliotecarioRepository);
+        emprestimoService = new EmprestimoService(usuarioRepository, livroRepository, emprestimoRepository,
+                bibliotecarioRepository);
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        if (em != null)
+            em.close();
+        if (emf != null)
+            emf.close();
     }
 
     @Test
     @DisplayName("Deve cadastrar um emprestimo no repository")
-    void deveCadastrarUmEmprestimo() throws Exception { 
+    void deveCadastrarUmEmprestimo() throws Exception {
 
         usuarioService.cadastrarUsuario("usuario", "usuario@email.com", TipoUsuario.COMUM);
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
@@ -87,31 +105,30 @@ public class EmprestimoServiceTest {
 
     @Test
     @DisplayName("Deve lancar um exception se o livro ja esta sendo emprestado")
-    void deveLancarExceptionSeLivroEstaSendoEmprestado() throws Exception { 
+    void deveLancarExceptionSeLivroEstaSendoEmprestado() throws Exception {
         usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
         usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
-        
+
         livroService.cadastrarLivro("titulo do livro", "autor", GeneroLiterario.ACAO_E_AVENTURA);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
 
         emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro", "bibli@email.com");
-        
-        assertThrows(BookAlreadyBorrowedException.class, () -> { 
+
+        assertThrows(BookAlreadyBorrowedException.class, () -> {
             emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro", "bibli@email.com");
         });
 
     }
 
-    
     @Test
     @DisplayName("Deve lancar uma exception se o usuario ultrapassar o limite de emprestimos de seu plano")
-    void deveLancarExceptionSeUsuarioUltrapassarLimiteDeEmprestimos() throws Exception { 
+    void deveLancarExceptionSeUsuarioUltrapassarLimiteDeEmprestimos() throws Exception {
         usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
         usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
-        
+
         livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
         livroService.cadastrarLivro("titulo do livro2", "autor", GeneroLiterario.ACAO_E_AVENTURA);
         livroService.cadastrarLivro("titulo do livro3", "autor", GeneroLiterario.ACAO_E_AVENTURA);
@@ -140,47 +157,47 @@ public class EmprestimoServiceTest {
         assertThrows(LimitBookReachedException.class, () -> {
             emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro10", "bibli@email.com");
         });
-        
+
     }
 
     @Test
     @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
-    void deveLancarExceptionSeUsuarioNaoEncontrado() throws Exception { 
+    void deveLancarExceptionSeUsuarioNaoEncontrado() throws Exception {
         usuarioService.cadastrarUsuario("usuario1", "usuario1@email.com", TipoUsuario.COMUM);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
-        
+
         livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
 
-        assertThrows(UserNotFoundException.class,() -> {
+        assertThrows(UserNotFoundException.class, () -> {
             emprestimoService.realizarEmprestimo("usuario2@email.com", "titulo do livro1", "bibli@email.com");
         });
     }
 
     @Test
     @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
-    void deveLancarExceptionSeLivroNaoEncontrado() throws Exception { 
+    void deveLancarExceptionSeLivroNaoEncontrado() throws Exception {
         usuarioService.cadastrarUsuario("usuario", "usuario1@email.com", TipoUsuario.COMUM);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
-        
+
         livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
 
-        assertThrows(BookNotFoundException.class,() -> {
+        assertThrows(BookNotFoundException.class, () -> {
             emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro2", "bibli@email.com");
         });
     }
 
     @Test
     @DisplayName("Deve lancar uma exception se o usuario nao for encontrado")
-    void deveLancarExceptionSeBibliotecarioNaoEncontrado() throws Exception { 
+    void deveLancarExceptionSeBibliotecarioNaoEncontrado() throws Exception {
         usuarioService.cadastrarUsuario("usuario", "usuario1@email.com", TipoUsuario.COMUM);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
-        
+
         livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
 
-        assertThrows(LibrarianNotFoundException.class,() -> {
+        assertThrows(LibrarianNotFoundException.class, () -> {
             emprestimoService.realizarEmprestimo("usuario1@email.com", "titulo do livro1", "b@email.com");
         });
     }
@@ -221,7 +238,7 @@ public class EmprestimoServiceTest {
         });
 
     }
-    
+
     @Test
     @DisplayName("")
     void deveListarTodosOsEmprestimos() throws Exception {
@@ -229,7 +246,7 @@ public class EmprestimoServiceTest {
         usuarioService.cadastrarUsuario("usuario2", "usuario2@email.com", TipoUsuario.PREMIUM);
 
         bibliotecarioService.cadastrarBibliotecario("bibliotecario", "bibli@email.com");
-        
+
         livroService.cadastrarLivro("titulo do livro1", "autor", GeneroLiterario.ACAO_E_AVENTURA);
         livroService.cadastrarLivro("titulo do livro2", "autor", GeneroLiterario.ACAO_E_AVENTURA);
         livroService.cadastrarLivro("titulo do livro3", "autor", GeneroLiterario.ACAO_E_AVENTURA);
@@ -250,6 +267,5 @@ public class EmprestimoServiceTest {
 
         assertEquals(8, emprestimoService.listarEmprestimos().size());
     }
-
 
 }

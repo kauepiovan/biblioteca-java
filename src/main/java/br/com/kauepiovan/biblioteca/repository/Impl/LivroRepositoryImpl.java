@@ -3,23 +3,29 @@ package br.com.kauepiovan.biblioteca.repository.impl;
 import java.util.Optional;
 import java.util.UUID;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+
 import br.com.kauepiovan.biblioteca.domain.model.Livro;
-import br.com.kauepiovan.biblioteca.repository.InMemoryRepository;
+import br.com.kauepiovan.biblioteca.repository.BaseRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.LivroRepository;
 
 public class LivroRepositoryImpl
-        extends InMemoryRepository<Livro, UUID>
-        implements LivroRepository{
+        extends BaseRepository<Livro, UUID>
+        implements LivroRepository {
 
-    @Override
-    protected UUID getId(Livro livro) {
-        return livro.getId();
+    public LivroRepositoryImpl(EntityManager entityManager) {
+        super(entityManager, Livro.class);
     }
 
     @Override
     public Optional<Livro> findByTitulo(String titulo) {
-        return data.stream()
-                .filter(u -> u.getTitulo().equals(titulo))
-                .findFirst();
+        try {
+            return Optional.of(entityManager.createQuery("SELECT l FROM Livro l WHERE l.titulo = :titulo", Livro.class)
+                    .setParameter("titulo", titulo)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 }

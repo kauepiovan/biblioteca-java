@@ -14,12 +14,29 @@ public class UsuarioServiceTest {
 
     private UsuarioRepositoryImpl repository;
     private UsuarioService service;
+    private jakarta.persistence.EntityManagerFactory emf;
+    private jakarta.persistence.EntityManager em;
 
     @BeforeEach
     void setup() {
-        repository = new UsuarioRepositoryImpl();
+        java.util.Map<String, String> properties = new java.util.HashMap<>();
+        properties.put("javax.persistence.jdbc.url", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+        properties.put("hibernate.hbm2ddl.auto", "create-drop");
+
+        emf = jakarta.persistence.Persistence.createEntityManagerFactory("biblioteca-pu", properties);
+        em = emf.createEntityManager();
+
+        repository = new UsuarioRepositoryImpl(em);
         service = new UsuarioService(repository);
 
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        if (em != null)
+            em.close();
+        if (emf != null)
+            emf.close();
     }
 
     @Test
@@ -28,7 +45,7 @@ public class UsuarioServiceTest {
         service.cadastrarUsuario("joe doe", "joe@email.com", TipoUsuario.COMUM);
 
         var usuario = repository.findByEmail("joe@email.com").orElseThrow();
-        
+
         assertEquals(usuario.getNome(), "joe doe");
         assertEquals(usuario.getEmail(), "joe@email.com");
         assertEquals(usuario.getTipo(), TipoUsuario.COMUM);

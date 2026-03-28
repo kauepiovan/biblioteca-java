@@ -2,17 +2,18 @@ package br.com.kauepiovan.biblioteca.repository.impl;
 
 import java.util.UUID;
 
+import jakarta.persistence.EntityManager;
+
 import br.com.kauepiovan.biblioteca.domain.model.Emprestimo;
-import br.com.kauepiovan.biblioteca.repository.InMemoryRepository;
+import br.com.kauepiovan.biblioteca.repository.BaseRepository;
 import br.com.kauepiovan.biblioteca.repository.interfaces.EmprestimoRepository;
 
-public class EmprestimoRepositoryImpl 
-        extends InMemoryRepository<Emprestimo, UUID>
+public class EmprestimoRepositoryImpl
+        extends BaseRepository<Emprestimo, UUID>
         implements EmprestimoRepository {
-    
-    @Override
-    protected UUID getId(Emprestimo emprestimo) {
-        return emprestimo.getId();
+
+    public EmprestimoRepositoryImpl(EntityManager entityManager) {
+        super(entityManager, Emprestimo.class);
     }
-    
+
 }

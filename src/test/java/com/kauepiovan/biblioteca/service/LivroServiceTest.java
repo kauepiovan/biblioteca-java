@@ -14,11 +14,28 @@ import br.com.kauepiovan.biblioteca.services.LivroService;
 public class LivroServiceTest {
     private LivroRepositoryImpl repository;
     private LivroService service;
+    private jakarta.persistence.EntityManagerFactory emf;
+    private jakarta.persistence.EntityManager em;
 
     @BeforeEach
     void setup() {
-        repository = new LivroRepositoryImpl();
+        java.util.Map<String, String> properties = new java.util.HashMap<>();
+        properties.put("javax.persistence.jdbc.url", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+        properties.put("hibernate.hbm2ddl.auto", "create-drop");
+
+        emf = jakarta.persistence.Persistence.createEntityManagerFactory("biblioteca-pu", properties);
+        em = emf.createEntityManager();
+
+        repository = new LivroRepositoryImpl(em);
         service = new LivroService(repository);
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        if (em != null)
+            em.close();
+        if (emf != null)
+            emf.close();
     }
 
     @Test

@@ -14,11 +14,28 @@ import br.com.kauepiovan.biblioteca.services.BibliotecarioService;
 public class BibliotecarioServiceTest {
     private BibliotecarioRepositoryImpl respository;
     private BibliotecarioService service;
+    private jakarta.persistence.EntityManagerFactory emf;
+    private jakarta.persistence.EntityManager em;
 
     @BeforeEach
     void setup() {
-        respository = new BibliotecarioRepositoryImpl();
+        java.util.Map<String, String> properties = new java.util.HashMap<>();
+        properties.put("javax.persistence.jdbc.url", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1");
+        properties.put("hibernate.hbm2ddl.auto", "create-drop");
+
+        emf = jakarta.persistence.Persistence.createEntityManagerFactory("biblioteca-pu", properties);
+        em = emf.createEntityManager();
+
+        respository = new BibliotecarioRepositoryImpl(em);
         service = new BibliotecarioService(respository);
+    }
+
+    @org.junit.jupiter.api.AfterEach
+    void tearDown() {
+        if (em != null)
+            em.close();
+        if (emf != null)
+            emf.close();
     }
 
     @Test
@@ -43,13 +60,12 @@ public class BibliotecarioServiceTest {
 
     @Test
     @DisplayName("Deve listar todos os bibliotecarios cadastrados")
-    void deveListarTodosBibliotecariosCadastrados() throws Exception{
+    void deveListarTodosBibliotecariosCadastrados() throws Exception {
         service.cadastrarBibliotecario("nome 1", "nome1@email.com");
-        service.cadastrarBibliotecario("nome 2" , "nome2@email.com");
+        service.cadastrarBibliotecario("nome 2", "nome2@email.com");
         service.cadastrarBibliotecario("nome 3", "nome3@email.com");
 
         assertEquals(3, service.listarBibliotecarios().size());
     }
-    
-    
+
 }
